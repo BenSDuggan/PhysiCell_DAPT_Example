@@ -1,0 +1,12 @@
+
+# PhysiCell ignores
+*.o
+*.exe
+
+# Python stuff
+.pytest_cache
+__pycache__
+*.pyc
+
+# Dev env stuff
+.vscode

@@ -1,2 +1,7 @@
-# PhysiCell_DAPT_Example
-An example of using PhysiCell with DAPT
+# PhysiCell DAPT Example
+
+Using PhysiCell 1.6.1
+
+## Steps to run
+
+* Run `make`
