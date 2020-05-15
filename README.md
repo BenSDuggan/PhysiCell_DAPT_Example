@@ -14,6 +14,6 @@ pip install dapt
 
 ## Run examples
 
-There are a few different examples provided.  The <basic.py> example shows how a CSV can be used to run different parameters in a PhysiCell simulation.  This is the simplest example.
+There are a few different examples provided.  The [basic.py] example shows how a CSV can be used to run different parameters in a PhysiCell simulation.  This is the simplest example.
 
-To remove <parameters.csv> and the files in the <output/> folder, you can run the <reset.py> script.  To additionally remove the .o and executable file created by PhysiCell you can include the `--hard` flag.
+To remove [parameters.csv] and the files in the [output/] folder, you can run the [reset.py] script.  To additionally remove the .o and executable file created by PhysiCell you can include the `--hard` flag.
