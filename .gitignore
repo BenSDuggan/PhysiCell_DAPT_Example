@@ -10,3 +10,6 @@ __pycache__
 
 # Dev env stuff
 .vscode
+
+# Misc
+.DS_Store

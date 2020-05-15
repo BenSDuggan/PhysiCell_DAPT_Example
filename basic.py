@@ -40,6 +40,9 @@ def main(db_path):
                 os.system("./biorobots")
             ap.update_status(parameters['id'], 'sim')
 
+            # Moving final image to output folder
+            os.system("cp output/final.svg ../output/%s_final.svg" % parameters["id"])
+
             # Update sheets to mark the test is finished
             ap.successful(parameters["id"])
 
@@ -48,7 +51,6 @@ def main(db_path):
             print(ValueError)
             ap.failed(parameters["id"], ValueError)
 
-        input()
         parameters = ap.next_parameters() #Get the next parameter
         
 def create_XML(parameters, default_settings="PhysiCell_settings_default.xml", save_settings="PhysiCell_settings.xml", off_limits=[]):
@@ -84,10 +86,11 @@ def reset_params(db_path):
     print('Reseting Parameters')
 
     with open(db_path, 'w') as f:
-        writer = csv.DictWriter(f, fieldnames=['id', 'status', 'start-time', 'end-time', 'comment', './overall/max_time','./user_parameters/drop_threshold'])
+        writer = csv.DictWriter(f, fieldnames=['id', 'status', 'start-time', 'end-time', 'comment', './overall/max_time','./user_parameters/number_of_workers'])
         writer.writeheader()
-        writer.writerow({'id':'test1', 'status':'', 'start-time':'', 'end-time':'', 'comment':'', './overall/max_time':'7200', './user_parameters/drop_threshold':'0.4', })
-        #writer.writerow({'id':'test2', 'startTime':'', 'endTime':'', 'status':'', 'a':'10', 'b':'-10', 'c':''})
+        writer.writerow({'id':'test1', 'status':'', 'start-time':'', 'end-time':'', 'comment':'', './overall/max_time':'2880', './user_parameters/number_of_workers':'5', })
+        writer.writerow({'id':'test2', 'status':'', 'start-time':'', 'end-time':'', 'comment':'', './overall/max_time':'2880', './user_parameters/number_of_workers':'50', })
+        #writer.writerow({'id':'test3', 'status':'', 'start-time':'', 'end-time':'', 'comment':'', './overall/max_time':'2880', './user_parameters/number_of_workers':'150', })
 
 if __name__ == '__main__':
     db_path = '../parameters.csv'

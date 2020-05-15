@@ -1,2 +1,4 @@
-id,status,start-time,end-time,comment,./overall/max_time,./user_parameters/drop_threshold
-test1,finished,2020-05-14 16:10:54,2020-05-14 16:18:11,,7200,0.4
+id,status,start-time,end-time,comment,./overall/max_time,./user_parameters/number_of_workers
+test1,,,,,2880,5
+test2,,,,,2880,50
+test3,,,,,2880,150
