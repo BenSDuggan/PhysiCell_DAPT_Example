@@ -97,7 +97,7 @@
 		 
 		<number_of_directors type="int" units="none">15</number_of_directors> 
 		<number_of_cargo_clusters type="int" units="none">100</number_of_cargo_clusters>
-		<number_of_workers type="int" units="none">50</number_of_workers>
+		<number_of_workers type="int" units="none">150</number_of_workers>
 		
 		 
 		<drop_threshold type="double" units="dimensionless">0.4</drop_threshold> 

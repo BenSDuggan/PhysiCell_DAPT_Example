@@ -3,6 +3,9 @@
 *.o
 *.exe
 
+# Example ignores
+*_params.csv
+
 # Python stuff
 .pytest_cache
 __pycache__
