@@ -32,6 +32,8 @@ Path('outputs/empty.txt').touch()
 # Remove CSVs created by simulations
 if os.path.exists('basic_params.csv'):
     os.remove('basic_params.csv')
+if os.path.exists('config_params.csv'):
+    os.remove('config_params.csv')
 
 # Cleanup PhysiCell
 os.system('make -C PhysiCell data-cleanup')

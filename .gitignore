@@ -2,6 +2,7 @@
 # PhysiCell ignores
 *.o
 *.exe
+biorobots
 
 # Example ignores
 *_params.csv

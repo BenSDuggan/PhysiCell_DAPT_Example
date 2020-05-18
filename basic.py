@@ -1,8 +1,8 @@
 """
-PhysiCell Example
-=================
+Basic DAPT and PhysiCell Example
+================================
 
-This file shows an example workflow with PhysiCell.
+This script demonstrates the simplest example of parameter testing in PhysiCell using DAPT.
 """
 
 import os, platform, datetime, time, csv, shutil, dapt
@@ -10,28 +10,32 @@ import xml.etree.ElementTree as ET
 
 def main(db_path):
 
-    sheet = dapt.Delimited_file(db_path, delimiter=',')
-    ap = dapt.Param(sheet, config=None)
+    # Set up DAPT objects: database (Delimited_file) and parameter manager (Param)
+    db = dapt.Delimited_file(db_path, delimiter=',')
+    ap = dapt.Param(db, config=None)
 
     print("Starting main script")
 
-    parameters = ap.next_parameters() #Get the next parameter
+    # Get the first parameter.  Returns None if there are none
+    parameters = ap.next_parameters()
 
     while parameters is not None:
 
         print("Request parameters: %s" % parameters)
 
+        # Use a try/except to report errors if they occur during the pipeline
         try:
-            # Reset from the previous run
+            # Reset PhysiCell from the previous run using PhysiCell's data-cleanup
             print("Cleaning up folder")
             os.system("make data-cleanup")
             ap.update_status(parameters['id'], 'clean')
 
-            # Create the parameters
+            # Update the default settings with the given parameters
             print("Creating parameters xml")
             create_XML(parameters, default_settings="config/PhysiCell_settings_default.xml", save_settings="config/PhysiCell_settings.xml")
             ap.update_status(parameters['id'], 'xml')
-            # Run PhysiCell
+
+            # Run PhysiCell (execution method depends on OS)
             print("Running test")
             if platform.system() == 'Windows':
                 os.system("biorobots.exe")
@@ -41,7 +45,6 @@ def main(db_path):
 
             # Moving final image to output folder
             shutil.copyfile('output/final.svg', '../outputs/%s_final.svg' % parameters["id"])
-            #os.system("cp output/final.svg ../output/%s_final.svg" % parameters["id"])
 
             # Update sheets to mark the test is finished
             ap.successful(parameters["id"])
@@ -53,7 +56,8 @@ def main(db_path):
 
         parameters = ap.next_parameters() #Get the next parameter
 
- # This is the same method implimented in `dapt.tools.create_XML()`.  It is coppied here to make the code easier to read
+ # This is the same method implimented in `dapt.tools.create_XML()`.  
+ # The method was coppied here to make the code easier to read.
 def create_XML(parameters, default_settings="PhysiCell_settings_default.xml", save_settings="PhysiCell_settings.xml", off_limits=[]):
     """
     Create a PhysiCell XML settings file given a dictionary of paramaters.  This function works by having a ``default_settings`` file which contains the generic XML structure.  Each key in ``parameters` then contains the paths to each XML tag in the ``default_settings`` file.  The value of that tag is then set to the value in the associated key.  If a key in ``parameters`` does not exist in the ``default_settings`` XML file then it is ignored.  If a key in ``parameters`` also exists in ``off_limits`` then it is ignored.
