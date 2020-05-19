@@ -1,68 +1,69 @@
 """
-PhysiCell Example
-=================
+Config DAPT and PhysiCell Example
+================================
 
-This file shows an example workflow with PhysiCell.
+This script demonstrates the simplest example of parameter testing in PhysiCell using DAPT.
 """
 
-import os,platform,datetime, time
-import dapt
+import os, platform, csv, shutil, dapt
+import xml.etree.ElementTree as ET
 
-conf = dapt.Config('config.json')
-sheet = dapt.Delimited_file('parameters.csv', delimiter=',')
-ap = dapt.Param(sheet, conf)
-box = dapt.Box(config = conf)
-box.connect()
+def main(db_path):
 
-print("Starting main script")
+    # Set up DAPT objects: config (Config), database (Delimited_file) and parameter manager (Param)
+    conf = dapt.Config(path='config_config.json')
+    db = dapt.Delimited_file(db_path, delimiter=',')
+    ap = dapt.Param(db, config=conf)
 
-parameters = ap.next_parameters() #Get the next parameter
+    print("Starting main script")
 
-while parameters is not None:
+    # Get the first parameter.  Returns None if there are none
+    parameters = ap.next_parameters()
 
-    if parameters == None:
-        print("No more parameters to run!")
-        break
+    while parameters is not None:
 
-    print("Request parameters: %s" % parameters)
+        print("Request parameters: %s" % parameters)
 
-    try:
-        # Reset from the previous run
-        print("Cleaning up folder")
-        dapt.tools.data_cleanup(conf)
-        ap.update_status(parameters['id'], 'clean')
+        # Use a try/except to report errors if they occur during the pipeline
+        try:
+            # Reset PhysiCell from the previous run using PhysiCell's data-cleanup
+            print("Cleaning up folder")
+            os.system("make data-cleanup")
+            ap.update_status(parameters['id'], 'clean')
 
-        # Create the parameters
-        print("Creating parameters xml and autoParamSettings.txt")
-        dapt.tools.create_XML(parameters, default_settings="config/PhysiCell_settings_default.xml", save_settings="config/PhysiCell_settings.xml")
-        dapt.tools.create_settings_file(parameters)
-        ap.update_status(parameters['id'], 'xml')
+            # Update the default settings with the given parameters
+            print("Creating parameters xml")
+            # Replaced the standalone `create_XML()` method
+            dapt.tools.createXML(parameters, default_settings="config/PhysiCell_settings_default.xml", save_settings="config/PhysiCell_settings.xml")
+            ap.update_status(parameters['id'], 'xml')
 
-        # Run PhysiCell
-        print("Running test")
-        if platform.system() == 'Windows':
-            os.system("AMIGOS-invasion.exe")
-        else:
-            os.system("./AMIGOS-invasion")
-        ap.update_status(parameters['id'], 'sim')
+            # Run PhysiCell (execution method depends on OS)
+            print("Running test")
+            if platform.system() == 'Windows':
+                os.system("biorobots.exe")
+            else:
+                os.system("./biorobots")
+            ap.update_status(parameters['id'], 'sim')
 
-        # Upload zip to box
-        print("Uploading zip to box")
-        if platform.system() == 'Windows':
-            print(box.uploadFile(conf.config['boxFolderID'], '\\', fileName))
-            print(box.uploadFile(conf.config['boxFolderZipID'], '\\', zipName))
-        else:
-            print(box.uploadFile(conf.config['boxFolderID'], '/'+fileName, fileName))
-            print(box.uploadFile(conf.config['boxFolderZipID'], '/'+fileName, zipName))
+            # Moving final image to output folder
+            shutil.copyfile('output/final.svg', '../outputs/%s_final.svg' % parameters["id"])
 
-            ap.update_status(parameters['id'], 'upload')
+            # Update sheets to mark the test is finished
+            ap.successful(parameters["id"])
 
-        # Update sheets to mark the test is finished
-        ap.successful(parameters["id"]) #Test completed successfully so we need to mark it as such
-        
-    except ValueError:
-        print("Test failed:")
-        print(ValueError)
-        ap.failed(parameters["id"], ValueError)
-        
-    
+        except ValueError:
+            print("Test failed:")
+            print(ValueError)
+            ap.failed(parameters["id"], ValueError)
+
+        parameters = ap.next_parameters() #Get the next parameter
+
+if __name__ == '__main__':
+    os.chdir('PhysiCell')
+
+    master_db_path = '../parameters.csv'
+    db_path = '../config_params.csv'
+
+    shutil.copyfile(master_db_path, db_path)
+
+    main(db_path)

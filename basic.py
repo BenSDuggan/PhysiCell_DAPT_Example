@@ -13,7 +13,7 @@ def main(db_path):
     # Set up DAPT objects: database (Delimited_file) and parameter manager (Param)
     db = dapt.Delimited_file(db_path, delimiter=',')
     ap = dapt.Param(db, config=None)
-    #ap.number_of_runs = 1
+    ap.number_of_runs = 1
 
     print("Starting main script")
 
@@ -28,23 +28,24 @@ def main(db_path):
         try:
             # Reset PhysiCell from the previous run using PhysiCell's data-cleanup
             print("Cleaning up folder")
-            os.system("make data-cleanup")
             ap.update_status(parameters['id'], 'clean')
+            os.system("make data-cleanup")
 
             # Update the default settings with the given parameters
             print("Creating parameters xml")
-            create_XML(parameters, default_settings="config/PhysiCell_settings_default.xml", save_settings="config/PhysiCell_settings.xml")
             ap.update_status(parameters['id'], 'xml')
+            create_XML(parameters, default_settings="config/PhysiCell_settings_default.xml", save_settings="config/PhysiCell_settings.xml")
 
             # Run PhysiCell (execution method depends on OS)
             print("Running test")
+            ap.update_status(parameters['id'], 'sim')
             if platform.system() == 'Windows':
                 os.system("biorobots.exe")
             else:
                 os.system("./biorobots")
-            ap.update_status(parameters['id'], 'sim')
 
             # Moving final image to output folder
+            ap.update_status(parameters['id'], 'output')
             shutil.copyfile('output/final.svg', '../outputs/%s_final.svg' % parameters["id"])
 
             # Update sheets to mark the test is finished
