@@ -5,7 +5,7 @@ Basic DAPT and PhysiCell Example
 This script demonstrates the simplest example of parameter testing in PhysiCell using DAPT.
 """
 
-import os, platform, datetime, time, csv, shutil, dapt
+import os, platform, csv, shutil, dapt
 import xml.etree.ElementTree as ET
 
 def main(db_path):
@@ -13,6 +13,7 @@ def main(db_path):
     # Set up DAPT objects: database (Delimited_file) and parameter manager (Param)
     db = dapt.Delimited_file(db_path, delimiter=',')
     ap = dapt.Param(db, config=None)
+    #ap.number_of_runs = 1
 
     print("Starting main script")
 
@@ -85,10 +86,10 @@ def create_XML(parameters, default_settings="PhysiCell_settings_default.xml", sa
     tree.write(save_settings)
 
 if __name__ == '__main__':
+    os.chdir('PhysiCell')
+
     master_db_path = '../parameters.csv'
     db_path = '../basic_params.csv'
-
-    os.chdir('PhysiCell')
 
     shutil.copyfile(master_db_path, db_path)
 
