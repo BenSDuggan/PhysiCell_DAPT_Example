@@ -42,7 +42,7 @@ PhysiCell allows domain, microenvironment, and user parameters to be defined in 
 
 The parameters used for this (and the other examples) are shown in the table below.  The table has three tests (one per row) named test1, test2, and test3, using the `id` attribute.  The `status` attribute can be updated to reflect what task is currently in progress and needs to be initially empty to be ran.  The `start-time` and `end-time` attributes are set when the test begins and ends, respectively.  The `comment` attribute can be set before, during, or after a test is ran to provide additional information.  The attributes to the right of `comment` are used for the PhysiCell biorobots sample project settings.
 
-| id                | status | start-time | end-time | comment | ./overall/max_time | ./user_parameters/attached_worker_migration_bias | ./user_parameters/unattached_worker_migration_bias |
+| id                | status | start-time | end-time | comment | ./overall/ max_time | ./user_parameters/ attached_worker_migration_bias | ./user_parameters/ unattached_worker_migration_bias |
 |-------------------|--------|------------|----------|---------|--------------------|--------------------------------------------------|----------------------------------------------------|
 | default           |        |            |          |         | 2880               | 1.0                                              | 0.5                                                |
 | attached-random   |        |            |          |         | 2880               | 0.1                                              | 1.0                                                |
@@ -93,7 +93,8 @@ ap.update_status(parameters['id'], 'clean')
 
 # Update the default settings with the given parameters
 print("Creating parameters xml")
-create_XML(parameters, default_settings="config/PhysiCell_settings_default.xml", save_settings="config/PhysiCell_settings.xml")
+create_XML(parameters, default_settings="config/PhysiCell_settings_default.xml",\
+           save_settings="config/PhysiCell_settings.xml")
 ap.update_status(parameters['id'], 'xml')
 
 # Run PhysiCell (execution method depends on OS)
