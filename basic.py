@@ -13,7 +13,6 @@ def main(db_path):
     # Set up DAPT objects: database (Delimited_file) and parameter manager (Param)
     db = dapt.Delimited_file(db_path, delimiter=',')
     ap = dapt.Param(db, config=None)
-    ap.number_of_runs = 1
 
     print("Starting main script")
 

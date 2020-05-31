@@ -35,6 +35,10 @@ if os.path.exists('basic_params.csv'):
 if os.path.exists('config_params.csv'):
     os.remove('config_params.csv')
 
+# Remove config files
+if os.path.exists('config_config.json'):
+    os.remove('config_config.json')
+
 # Cleanup PhysiCell
 os.system('make -C PhysiCell data-cleanup')
 

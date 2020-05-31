@@ -8,12 +8,13 @@ This script demonstrates the simplest example of parameter testing in PhysiCell 
 import os, platform, csv, shutil, dapt
 import xml.etree.ElementTree as ET
 
-def main(db_path):
+def main(db_path, config_path):
 
-    # Set up DAPT objects: config (Config), database (Delimited_file) and parameter manager (Param)
-    conf = dapt.Config(path='config_config.json')
-    db = dapt.Delimited_file(db_path, delimiter=',')
-    ap = dapt.Param(db, config=conf)
+    # Set up DAPT objects: database (Delimited_file) and parameter manager (Param)
+    config = dapt.Config(path=config_path)
+    db = dapt.db.Delimited_file(db_path, delimiter=',')
+    ap = dapt.Param(db, config=config)
+    ap.number_of_runs = 1
 
     print("Starting main script")
 
@@ -28,24 +29,24 @@ def main(db_path):
         try:
             # Reset PhysiCell from the previous run using PhysiCell's data-cleanup
             print("Cleaning up folder")
-            os.system("make data-cleanup")
             ap.update_status(parameters['id'], 'clean')
+            os.system("make data-cleanup")
 
             # Update the default settings with the given parameters
             print("Creating parameters xml")
-            # Replaced the standalone `create_XML()` method
-            dapt.tools.createXML(parameters, default_settings="config/PhysiCell_settings_default.xml", save_settings="config/PhysiCell_settings.xml")
             ap.update_status(parameters['id'], 'xml')
+            dapt.tools.create_XML(parameters, default_settings="config/PhysiCell_settings_default.xml", save_settings="config/PhysiCell_settings.xml")
 
             # Run PhysiCell (execution method depends on OS)
             print("Running test")
+            ap.update_status(parameters['id'], 'sim')
             if platform.system() == 'Windows':
                 os.system("biorobots.exe")
             else:
                 os.system("./biorobots")
-            ap.update_status(parameters['id'], 'sim')
 
             # Moving final image to output folder
+            ap.update_status(parameters['id'], 'output')
             shutil.copyfile('output/final.svg', '../outputs/%s_final.svg' % parameters["id"])
 
             # Update sheets to mark the test is finished
@@ -63,7 +64,10 @@ if __name__ == '__main__':
 
     master_db_path = '../parameters.csv'
     db_path = '../config_params.csv'
+    master_config_path = '../config.json'
+    config_path = '../config_config.json'
 
     shutil.copyfile(master_db_path, db_path)
+    shutil.copyfile(master_config_path, config_path)
 
-    main(db_path)
+    main(db_path, config_path)
